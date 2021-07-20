@@ -2,11 +2,9 @@ from django.shortcuts import render
 from .models import Car, Rate
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Count, Avg
-from rest_framework import viewsets
 from rest_framework.parsers import JSONParser
 from .serializers import CarSerializer, RateSerializer, PopularSerializer
 from django.views.decorators.csrf import csrf_exempt
-from pprint import pprint
 import json, requests
 
 # Create your views here.
@@ -113,7 +111,6 @@ def popular(request):
         for car in cars:
             if car.id in avg_rate_map:
                 car.rates_number = avg_rate_map[car.id]
-            pprint(car)
 
         serializer = PopularSerializer(cars, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
         return JsonResponse(serializer.data, safe = False)
