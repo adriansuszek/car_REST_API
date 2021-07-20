@@ -19,7 +19,7 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', views.home),
+    path('', views.home),
     path('', include('api_car.urls')),
     path('cars/', include('api_car.urls'))
 
