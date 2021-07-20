@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-woh*@@0-m8s4bo*p#786xeh9xnj$6muph*ero*6o4y@8^s%*if'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 # ALLOWED_HOSTS = []
 
 # try:
@@ -80,27 +80,14 @@ WSGI_APPLICATION = 'netg.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+import dj_database_url
+DATABASES = {}
 
-DATABASES = {
+if os.environ.get('DATABASE_SSL') == 'False':
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=False)
+else:
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
-    'default': {
-
-    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-    'NAME': 'postgres',
-
-    'USER': 'postgres',
-
-    'PASSWORD': 'postgres',
-
-    'HOST': 'db',
-
-
-    'PORT': '5432',
-
-}
-
-}
 
 
 
