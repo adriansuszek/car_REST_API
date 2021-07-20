@@ -1,3 +1,14 @@
 ### Django ###
 data
 local_settings.py
+*.log
+
+*.pot
+
+*.pyc
+
+*/*/*/__pycache__/
+
+*/*/__pycache__/
+
+*/__pycache__/

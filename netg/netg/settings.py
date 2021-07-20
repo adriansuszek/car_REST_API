@@ -28,10 +28,10 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
-try:
-    from .local_settings import *
-except ImportError:
-    print("There is no local file. You are on production env")
+# try:
+#     from .local_settings import *
+# except ImportError:
+#     print("There is no local file. You are on production env")
 
 # Application definition
 
