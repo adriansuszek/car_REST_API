@@ -18,7 +18,7 @@ class Car(models.Model):
 
 class Rate(models.Model):
     car_id = models.ForeignKey(Car, on_delete = models.CASCADE, null=True) #musze to zmienic na 'car_id'
-    rate = models.IntegerField(choices=RATES) #musze to zmienic na 'rating'
+    rating = models.IntegerField(choices=RATES) #musze to zmienic na 'rating'
 
     def __str__(self):
         return f'{self.car_id} rate: {self.rate}'

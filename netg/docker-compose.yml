@@ -23,6 +23,3 @@ services:
       - "8000:8000"
     depends_on:
       - db
-
-#tu beda 2 kontenery (serwisy): db i web
-# docker run --rm -v $PWD:/code -p 8000:8000 netg python manage.py runserver 0.0.0.0:8000

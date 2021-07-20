@@ -12,12 +12,12 @@ import json, requests
 def car_list(request):
     if request.method == "GET":
         cars = Car.objects.all()
-        avg_rating = Rate.objects.all().values('car_id').annotate(Avg('rate'))
+        avg_rating = Rate.objects.all().values('car_id').annotate(Avg('rating'))
 
 
         avg_rate_map = {}
         for avg_rate in avg_rating:
-            avg_rate_map[avg_rate['car_id']] = avg_rate['rate__avg']
+            avg_rate_map[avg_rate['car_id']] = avg_rate['rating__avg']
 
 
         for car in cars:
@@ -76,7 +76,7 @@ def car_detail(request, car_id):
 def rates(request):
     if request.method == "GET":
         rates = Rate.objects.all()
-        serializer = RateSerializer(rates, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        serializer = RateSerializer(rates, many = True)
         return JsonResponse(serializer.data, safe = False)
 
     elif request.method == "POST":
@@ -92,16 +92,9 @@ def rates(request):
 
 def popular(request):
     if request.method == "GET":
-        # # rates = Rate.objects.filter(username='username').count()
-        # rates = Rate.objects.all().values('car_id').annotate(total=Count('car_id')).order_by('total')
-        # # carsy = Cars.objects.all()
-        # # serializer = RateSerializer(rates, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
-        # serializer = PopularSerializer(rates, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
-        # return JsonResponse(serializer.data, safe = False)
+
         cars = Car.objects.all()
         avg_rating = Rate.objects.all().values('car_id').annotate(total=Count('car_id')).order_by('total')
-
-        # pubs = Rate.objects.annotate(avg_rating=Avg(['rate']))
 
         avg_rate_map = {}
         for avg_rate in avg_rating:
@@ -112,5 +105,5 @@ def popular(request):
             if car.id in avg_rate_map:
                 car.rates_number = avg_rate_map[car.id]
 
-        serializer = PopularSerializer(cars, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        serializer = PopularSerializer(cars, many = True)
         return JsonResponse(serializer.data, safe = False)

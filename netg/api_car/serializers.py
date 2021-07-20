@@ -21,7 +21,7 @@ class RateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rate
-        fields = ['car_id','rate']
+        fields = ['car_id','rating']
 
 
 class PopularSerializer(serializers.ModelSerializer):
