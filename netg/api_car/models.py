@@ -17,9 +17,8 @@ class Car(models.Model):
         return f'{self.make} {self.model}'
 
 class Rate(models.Model):
-    car = models.ForeignKey(Car, on_delete = models.CASCADE)
-    # rate = models.CharField(choices=RATES, max_length=100)
-    rate = models.IntegerField(choices=RATES)
+    car_id = models.ForeignKey(Car, on_delete = models.CASCADE, null=True) #musze to zmienic na 'car_id'
+    rate = models.IntegerField(choices=RATES) #musze to zmienic na 'rating'
 
     def __str__(self):
-        return f'{self.car} rate: {self.rate}'
+        return f'{self.car_id} rate: {self.rate}'

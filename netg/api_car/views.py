@@ -1,52 +1,61 @@
 from django.shortcuts import render
 from .models import Car, Rate
 from django.http import HttpResponse, JsonResponse
+from django.db.models import Count, Avg
+from rest_framework import viewsets
 from rest_framework.parsers import JSONParser
-from .serializers import CarSerializer
+from .serializers import CarSerializer, RateSerializer, PopularSerializer
 from django.views.decorators.csrf import csrf_exempt
-
-# , RateSerializer
+from pprint import pprint
+import json, requests
 
 # Create your views here.
 @csrf_exempt
 def car_list(request):
-
     if request.method == "GET":
         cars = Car.objects.all()
-        serializer = CarSerializer(cars, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        avg_rating = Rate.objects.all().values('car_id').annotate(Avg('rate'))
+
+        # pubs = Rate.objects.annotate(avg_rating=Avg(['rate']))
+
+        avg_rate_map = {}
+        for avg_rate in avg_rating:
+            avg_rate_map[avg_rate['car_id']] = avg_rate['rate__avg']
+
+
+        for car in cars:
+            if car.id in avg_rate_map:
+                car.avg_rating = avg_rate_map[car.id]
+            pprint(car)
+
+
+        serializer = CarSerializer(cars, many = True)
         return JsonResponse(serializer.data, safe = False)
 
     elif request.method == "POST":
+
         data = JSONParser().parse(request)
-        serializer = CarSerializer(data = data)
 
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status = 201)
-        else:
-            return JsonResponse(serializer.errors, status = 400)
+        car_make = data['make']
+        car_model = data['model']
 
+        resp = requests.get(f'https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/{car_make}?format=json')
+        external_data = resp.json()
 
-    # try:
-    #     cars = Car.objects.get(pk=pk)
-    # except Car.DoesNotExist:
-    #     return HttpResponse(status=404)
-    #
-    # if request.method == 'GET':
-    #     serializer = CarSerializer(cars, many = True)
-    #     return JsonResponse(serializer.data, safe = False)
-    #
-    # elif request.method == 'PUT':
-    #     data = JSONParser().parse(request)
-    #     serializer = CarSerializer(cars, data=data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return JsonResponse(serializer.data)
-    #     return JsonResponse(serializer.errors, status=400)
-    #
-    # elif request.method == 'DELETE':
-    #     cars.delete()
-    #     return HttpResponse(status=204)
+        for i in range(len(external_data['Results'])):
+
+            # try:
+            if data['make'].upper() in external_data['Results'][i]['Make_Name'].upper() and data['model'].upper() in external_data['Results'][i]['Model_Name'].upper():
+                print("SUKCES!")
+                serializer = CarSerializer(data = data)
+
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(serializer.data, status = 201)
+                else:
+                    return JsonResponse(serializer.errors, status = 400)
+            # except:
+
 
 @csrf_exempt
 def car_detail(request, car_id):
@@ -56,18 +65,55 @@ def car_detail(request, car_id):
     except Car.DoesNotExist:
         return HttpResponse(status=404)
 
-    if request.method == 'GET':
-        serializer = CarSerializer(car) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
-        return JsonResponse(serializer.data)
+    # if request.method == 'GET':
+    #     serializer = CarSerializer(car) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+    #     return JsonResponse(serializer.data)
 
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = CarSerializer(car, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
+    if request.method == 'DELETE':
         car.delete()
         return HttpResponse(status=204)
+
+
+@csrf_exempt
+# class CarListView(viewsets.ModelViewSet):
+def rates(request):
+    if request.method == "GET":
+        rates = Rate.objects.all()
+        serializer = RateSerializer(rates, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        return JsonResponse(serializer.data, safe = False)
+
+    elif request.method == "POST":
+        data = JSONParser().parse(request)
+        serializer = RateSerializer(data = data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status = 201)
+        else:
+            return JsonResponse(serializer.errors, status = 400)
+
+def popular(request):
+    if request.method == "GET":
+        # # rates = Rate.objects.filter(username='username').count()
+        # rates = Rate.objects.all().values('car_id').annotate(total=Count('car_id')).order_by('total')
+        # # carsy = Cars.objects.all()
+        # # serializer = RateSerializer(rates, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        # serializer = PopularSerializer(rates, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        # return JsonResponse(serializer.data, safe = False)
+        cars = Car.objects.all()
+        avg_rating = Rate.objects.all().values('car_id').annotate(total=Count('car_id')).order_by('total')
+
+        # pubs = Rate.objects.annotate(avg_rating=Avg(['rate']))
+
+        avg_rate_map = {}
+        for avg_rate in avg_rating:
+            avg_rate_map[avg_rate['car_id']] = avg_rate['total']
+
+
+        for car in cars:
+            if car.id in avg_rate_map:
+                car.rates_number = avg_rate_map[car.id]
+            pprint(car)
+
+        serializer = PopularSerializer(cars, many = True) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        return JsonResponse(serializer.data, safe = False)
