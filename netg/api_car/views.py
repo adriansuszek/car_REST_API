@@ -16,7 +16,6 @@ def car_list(request):
         cars = Car.objects.all()
         avg_rating = Rate.objects.all().values('car_id').annotate(Avg('rate'))
 
-        # pubs = Rate.objects.annotate(avg_rating=Avg(['rate']))
 
         avg_rate_map = {}
         for avg_rate in avg_rating:
@@ -26,7 +25,6 @@ def car_list(request):
         for car in cars:
             if car.id in avg_rate_map:
                 car.avg_rating = avg_rate_map[car.id]
-            pprint(car)
 
 
         serializer = CarSerializer(cars, many = True)
@@ -42,20 +40,21 @@ def car_list(request):
         resp = requests.get(f'https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/{car_make}?format=json')
         external_data = resp.json()
 
-        for i in range(len(external_data['Results'])):
 
-            # try:
-            if data['make'].upper() in external_data['Results'][i]['Make_Name'].upper() and data['model'].upper() in external_data['Results'][i]['Model_Name'].upper():
-                print("SUKCES!")
-                serializer = CarSerializer(data = data)
+        car_models = []
+        for car in external_data['Results']:
+            car_models.append(car['Model_Name'].upper())
 
-                if serializer.is_valid():
-                    serializer.save()
-                    return JsonResponse(serializer.data, status = 201)
-                else:
-                    return JsonResponse(serializer.errors, status = 400)
-            # except:
+        if data['model'].upper() in car_models:
+            serializer = CarSerializer(data = data)
 
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status = 201)
+            else:
+                return JsonResponse(serializer.errors, status = 400)
+        else:
+            return HttpResponse(status=400)
 
 @csrf_exempt
 def car_detail(request, car_id):
@@ -65,9 +64,9 @@ def car_detail(request, car_id):
     except Car.DoesNotExist:
         return HttpResponse(status=404)
 
-    # if request.method == 'GET':
-    #     serializer = CarSerializer(car) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
-    #     return JsonResponse(serializer.data)
+    if request.method == 'GET':
+        serializer = CarSerializer(car) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        return JsonResponse(serializer.data)
 
     if request.method == 'DELETE':
         car.delete()
@@ -85,6 +84,7 @@ def rates(request):
     elif request.method == "POST":
         data = JSONParser().parse(request)
         serializer = RateSerializer(data = data)
+
 
         if serializer.is_valid():
             serializer.save()

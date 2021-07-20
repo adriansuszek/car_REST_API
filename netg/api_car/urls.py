@@ -8,7 +8,8 @@ router = routers.DefaultRouter()
 
 
 urlpatterns = [
-    path('cars/', car_list),
+    # path('cars/', car_list),
+    path('', car_list),
     path('cars/<int:car_id>', car_detail),
     path('rate/', rates),
     path('popular/', popular),
