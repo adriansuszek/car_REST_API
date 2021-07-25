@@ -1,0 +1,4 @@
+data
+docker-compose.yml
+db.sqlite3
+.gitignore

@@ -1,0 +1,15 @@
+### Django ###
+data
+local_settings.py
+**/my_env/
+*.log
+
+*.pot
+
+*.pyc
+
+*/*/*/__pycache__/
+
+*/*/__pycache__/
+
+*/__pycache__/
