@@ -1,7 +1,7 @@
 ### Django ###
 data
 local_settings.py
-../my_env
+**/my_env/
 *.log
 
 *.pot
