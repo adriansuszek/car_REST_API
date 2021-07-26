@@ -15,9 +15,41 @@ USING DOCKER:
     'HOST': '127.0.0.1'
   2. Makemigrations and migrate (python3 manage.py makemigrations / python3 manage.py migrate)
   3. Run server (python3 manage.py runserver)
-  
-  
  ---------------------------------------------------------------------
-  
   Deployed version:
   https://adriansuszek.pythonanywhere.com/cars/
+
+   ---------------------------------------------------------------------
+Endpoints, so you can test API:
+  
+  1. POST /cars/
+
+Content-Type: application/json;charset=UTF-8
+
+{
+
+  "make" : "Volkswagen",
+
+  "model" : "Golf",
+
+}
+  
+  2. DELETE /cars/{  id }/
+  
+  
+  3. POST /rate/
+
+Content-Type: application/json;charset=UTF-8
+
+{
+
+  "car_id" : 1,
+
+  "rating" : 5,
+
+}
+  
+  4. GET /cars/
+  
+  5. GET /popular/
+  
