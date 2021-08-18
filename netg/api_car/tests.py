@@ -1,8 +1,9 @@
-from rest_framework import status
-from rest_framework.test import APITestCase, APIRequestFactory, RequestsClient
-from django.test import TestCase
-from .models import Car, Rate
 import json
+
+from rest_framework.test import APITestCase
+
+from .models import Car, Rate
+
 
 # Create your tests here.
 class CarPostTestCase(APITestCase):
@@ -51,4 +52,3 @@ class CarDeletePositiveTestCase(APITestCase):
         car_to_delete = Car.objects.create(make="HONDA", model="Civic")
         response = self.client.delete(f"/cars/{car_to_delete.id}")
         self.assertEqual(response.status_code, 204)
-        

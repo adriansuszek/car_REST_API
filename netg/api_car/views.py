@@ -1,13 +1,14 @@
-from django.shortcuts import render
 from .models import Car, Rate
-from django.http import HttpResponse, JsonResponse
+import requests
 from django.db.models import Count, Avg
-from rest_framework.parsers import JSONParser
-from .serializers import CarSerializer, RateSerializer, PopularSerializer
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json, requests
+from rest_framework.parsers import JSONParser
 
-# Create your views here.
+from .models import Car, Rate
+from .serializers import CarSerializer, RateSerializer, PopularSerializer
+
+
 @csrf_exempt
 def car_list(request):
     if request.method == "GET":
@@ -63,7 +64,7 @@ def car_detail(request, car_id):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = CarSerializer(car) #cars is a QuerySet, so: many=UserAttributeSimilarityValidator
+        serializer = CarSerializer(car)
         return JsonResponse(serializer.data)
 
     if request.method == 'DELETE':
@@ -76,8 +77,8 @@ def car_detail(request, car_id):
 def rates(request):
     if request.method == "GET":
         rates = Rate.objects.all()
-        serializer = RateSerializer(rates, many = True)
-        return JsonResponse(serializer.data, safe = False)
+        serializer = RateSerializer(rates, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
     elif request.method == "POST":
         data = JSONParser().parse(request)
@@ -86,9 +87,9 @@ def rates(request):
 
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status = 201)
+            return JsonResponse(serializer.data, status=201)
         else:
-            return JsonResponse(serializer.errors, status = 400)
+            return JsonResponse(serializer.errors, status=400)
 
 def popular(request):
     if request.method == "GET":

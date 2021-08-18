@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import car_list, car_detail, rates, popular
-from . import views
 from rest_framework import routers
+
+from .views import car_list, car_detail, rates, popular
 
 router = routers.DefaultRouter()
 # router.register('cars', views.CarListView)

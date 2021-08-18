@@ -1,7 +1,6 @@
 from rest_framework import serializers
+
 from .models import Car, Rate
-from django.db.models import Avg
-from pprint import pprint
 
 
 class CarSerializer(serializers.ModelSerializer):
