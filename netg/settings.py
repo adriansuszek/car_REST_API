@@ -53,10 +53,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'netg.wsgi.application'
 
-DATABASES = {
+ALL_DATABASES = {
 
-    'default': {
-
+    'postgres': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
     'NAME': 'postgres',
@@ -68,10 +67,21 @@ DATABASES = {
     'HOST': 'db',
 
     'PORT': '5432',
+},
+
+    'sqlite':
+        {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+}
+DATABASES = {
+
+    'default': {}
 
 }
 
-}
+DATABASES['default'] = ALL_DATABASES[os.environ.get('DATABASE', 'sqlite')]
 
 
 AUTH_PASSWORD_VALIDATORS = [

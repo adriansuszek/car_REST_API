@@ -17,8 +17,7 @@ services:
     volumes:
       - .:/code
     environment:
-      - DATABASE_SSL=False
-      - DATABASE_URL=postgres://postgres:postgres@db/postgres
+      - DATABASE=postgres
     ports:
       - "8000:8000"
     depends_on:
